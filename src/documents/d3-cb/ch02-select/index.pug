@@ -16,12 +16,59 @@ block main
       scratch d3 ch01
     header
       :markdown-it(linkify langPrefix='highlight-')
-        let's demonstrate the [text function](https://github.com/d3/d3-fetch/blob/v1.1.2/README.md#text). Here's a target paragraph. We'll populate it with a "hello world" text :
+        let's demonstrate the [text function](https://github.com/d3/d3-fetch/blob/v1.1.2/README.md#text), from the [d3-selection](https://github.com/d3/d3/blob/master/API.md#selecting-elements) module. Here's a target paragraph. Check out the [main api](https://github.com/d3/d3/blob/master/API.md) for core d3 functions and popular modules. We'll populate it with a "hello world" text :
+        notice as how d3, lets you add an attribute with [attr](https://github.com/d3/d3-selection/blob/v1.4.0/README.md#selection_attr) or a class with [classed function](https://github.com/d3/d3-selection/blob/v1.4.0/README.md#selection_classed)
     p#target
+    :markdown-it()
+      Now let's iterate through this list and add numbers
+    ul.test-list
+        li
+          test item
+        li
+          test item
+        li
+          third item
+    :markdown-it()
+      Next up, let's look at subselection (selecting of descendents from a root node, similar to find() in jquery)
+      
+    .sample-subselection
+      <section id="section1">
+          <div>
+              <p>blue box</p>
+          </div>
+      </section>
+      <section id="section2">
+          <div>
+              <p>red box</p>
+          </div>
+      </section>
+    
+    
 block footer_scripts
 
   script(type="text/javascript")(src="//d3js.org/d3.v5.min.js").
   script.js-main(type="text/javascript")(nonce="some-nonce").
-    // select the element and use the 
+    // select the element and use the text function to append text to it 
+    //notice the chaining calls, that's because each function returns the instance mentioned
+    // in the select (or followup subselect if any)
     d3.select("p#target")
       .text("Hello world!");
+      
+    // iterate through a list of items and modify dom
+    d3.selectAll(".test-list li")
+      .attr("class", "red box")
+      .each(function(d, i){
+        d3.select(this).append("h3").text(i);
+      })
+      
+      // doing it in one select 
+      d3.select(".sample-subselection #section1 > div")
+        .attr("class", "blue box")
+        .append("p") // things like append() CHANGE what's currently being talked about 
+          .text("class adjusted") // add text to the p that was appended, not the div originally selected
+        
+      // doing something similar but this time crawling the dom with subselect 
+      d3.select(".sample-subselection #section2")
+        .select("div") // this selsect is relative of descendents of  #section2 element 
+        .attr("class", "blue box")
+        .append("p").text("class adjusted")
