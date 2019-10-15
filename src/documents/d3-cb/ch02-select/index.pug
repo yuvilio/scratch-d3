@@ -1,0 +1,27 @@
+extends /_layouts/single
+
+
+append vars
+  -
+    var pageInfo = {
+      path: '/d3-cb/ch02-select/',
+      title: 'd3-cb chapter 2 | select',
+      description: 'intro',
+      pageClass: 'd3-cb-ch02-select'
+    }
+
+block main
+  article.container
+    h1
+      scratch d3 ch01
+    header
+      :markdown-it(linkify langPrefix='highlight-')
+        let's demonstrate the [text function](https://github.com/d3/d3-fetch/blob/v1.1.2/README.md#text). Here's a target paragraph. We'll populate it with a "hello world" text :
+    p#target
+block footer_scripts
+
+  script(type="text/javascript")(src="//d3js.org/d3.v5.min.js").
+  script.js-main(type="text/javascript")(nonce="some-nonce").
+    // select the element and use the 
+    d3.select("p#target")
+      .text("Hello world!");

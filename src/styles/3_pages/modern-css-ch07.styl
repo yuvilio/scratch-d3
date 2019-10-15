@@ -1,0 +1,15 @@
+:root // globalally available variables
+  --bg-color-main tomato //define property
+
+.modern-css-ch07
+  //variable available relative to this part of the dom
+  --bg-color-secondary wheat //define property
+
+  .ex-01-root
+    background-color var(--bg-color-main) // use property
+
+  .ex-02-var
+    background-color var(--bg-color-secondary) // use property
+
+  .ex-03-fallback
+    background-color var(--bg-no-such-thing, seashell) // graceful fallback to

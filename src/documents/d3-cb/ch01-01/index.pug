@@ -1,0 +1,62 @@
+extends /_layouts/single
+
+
+append vars
+  -
+    var pageInfo = {
+      path: '/d3-cb/ch01-01/',
+      title: 'd3-cb chapter 1 | intro',
+      description: 'intro',
+      pageClass: 'd3-cb-ch01-01'
+    }
+
+block main
+  article.container
+    h1
+      scratch d3 ch01
+block footer_scripts
+
+  script(type="text/javascript")(src="//d3js.org/d3.v5.min.js").
+  script.js-main(type="text/javascript")(nonce="some-nonce").
+    // remember, functions you define, like SimpleWidget, are also objects (can have properties associated with them)
+    // also notice the function chaining. each function returning the same instance object to keep
+    // the chain going 
+    function SimpleWidget(spec){
+      var instance = {}; // <-- A
+
+      var headline, description; // <-- B
+
+      // we'll add a render function (d3 looks for those)
+      instance.render = function () {
+          var div = d3.select('body').append("div");
+
+          div.append("h3").text(headline); // <-- C
+
+          div.attr("class", "box")
+             .attr("style", "color:" + spec.color) // <-- D
+             .append("p")
+                 .text(description); // <-- E
+
+          return instance; // <-- F
+      };
+
+      instance.headline = function (h) {
+          if (!arguments.length) return headline; // <-- G
+          headline = h;
+          return instance; // <-- H
+      };
+
+      instance.description = function (d) {
+          if (!arguments.length) return description;
+          description = d;
+          return instance;
+      };
+
+      return instance; // <-- I
+    }
+    var widget = SimpleWidget({color: "#6495ed"})
+            .headline("Simple Widget")
+            .description("This is a simple widget demonstrating functional javascript.");
+    widget.render();
+  
+  
