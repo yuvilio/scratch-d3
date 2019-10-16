@@ -1,0 +1,96 @@
+extends /_layouts/single
+
+
+append vars
+  -
+    var pageInfo = {
+      path: '/d3-cb/ch02-select/',
+      title: 'd3-cb chapter 2 | select',
+      description: 'intro',
+      pageClass: 'd3-cb-ch02-select'
+    }
+
+block main
+  article.container
+    h1
+      scratch d3 ch01
+    header
+      :markdown-it(linkify langPrefix='highlight-')
+        Let's take some data and demonstrate the [Enter Update Exit pattern](https://www.d3indepth.com/enterexit/) of visualizing that data.  Example [in action](https://bl.ocks.org/mbostock/3808218). We'll use some of d3-selection module's main functions for this. the [enter, merge, exit](https://github.com/d3/d3/blob/master/API.md#joining-data) functions among others (data, ..). 
+        
+        Recall the initial setup of the pattern. There are two sets we're thinking about and their intersection. One set is the data . Here the data is an array:
+        
+        ```js var data = [10, 15, 30, 50, 80, 65, 55, 30, 20, 10, 8];```
+        
+        The second set it the "visual set" or information. In this case it's the .h-bar elements which have some styles associated with them that make them look like bars with some js/css logic. whatever the number in the div (say 10) impacts the width of the bar say (say 30px, or three times ).
+        
+        The intersection is the items in the data that are currently being rendered (having h-bar). Notice that for this visualization, _not all_ of the data get rendered at once. For other visualizations, they might all get rendered at once.
+        
+        We want to visualize this data using bar graphs, so we'll need to figure out how to get thos h-bar elements to reflect the data. we'll go with giving them width (via js added css)
+        
+        Ok, that's the setup. Now for the pattern that documents the interaction between these two sets.
+        
+    figure.bar-graph-ex
+
+    
+block footer_scripts
+
+  script(type="text/javascript")(src="//d3js.org/d3.v5.min.js").
+  script.js-main(type="text/javascript")(nonce="some-nonce").
+    var data = [10, 15, 30, 50, 80, 65, 55, 30, 20, 10, 8]; // <- A
+    
+    // called at the last line
+    function render(data) { // <- B
+      
+       // first, let's bind the data (items in bars array) to our visual set (div.h-bar elements)
+       //we're saying that all children div.h-bar of this figure.bar-graph-ex, will be mapped to 
+       // elements in the data. note that this is not enough to convey anything visually.
+       // it's just a loose association for now
+        var bars = 
+        d3.select("figure.bar-graph-ex")
+        .selectAll("div.h-bar") // <- C
+                .data(data); // Update <- D // bind the array of numbers above to these div.h-bar
+                
+                
+          
+        // the "Enter" part of the pattern
+        // so now that bars are associated with h-bar divs, let's 
+        // cycle through the above data and create a visual element (<div class="h-bar">10</div>)
+        // for each one 
+        // we're gonna build a selection of elements using merge (since there are non h-bar elements at the start)
+        bars.enter() // <- E
+                .append("div") // <- F
+                .attr("class", "h-bar") // <- G
+              // now for the Update portion of the pattern. made a new h-bar element ? (<div class="h-bar"></div>) , add it to our visual set, using merge()
+            .merge(bars) // Enter + Update <- H
+            // while we have that h-bar currently selected, let's convey some visual information
+            // so somthing actually shows.
+            // take the number (data), say for the first one 10, and make the bar's css with be that amount of pixels (e.g.: 10px)
+            // now that we have this newly adjusted set, let's update what we'll visually do to those existing bars (and the new one just added):
+                .style("width", function (d) {
+                    return (d * 3) + "px"; // <- I
+                })
+                // also, append the actual data number (10) as content of that element
+                .text(function (d) {
+                    return d; // <- J
+                });
+                
+          
+        // Exit
+        // grab the dom elements (.h-bar divs) that did not get associated with the visual representation (the number that was shifted)
+        // and remove those elements (.h-bar) from the visualization. so the shifted number's element is removed
+        bars.exit() // <- K
+                .remove();
+    }
+    
+    //the data is "alive". we'll be removing an element, adding a new element and rendering each time to reflect the adjusted visualizatio (bar graphs)
+    // this change in the data shows why create/update/exit is a handy way to think about what 
+    // we're doing to the data
+    setInterval(function () { // <- L
+        data.shift(); // pop/remove an element 
+        data.push(Math.round(Math.random() * 100)); // add a new element between 1 and 100
+        render(data); // render this new modified data (which won't sho the removed number any more and will show the new number we just added)
+    }, 1500);
+    
+    
+    render(data);
