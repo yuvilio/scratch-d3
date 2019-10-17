@@ -1,0 +1,80 @@
+extends /_layouts/single
+
+
+append vars
+  -
+    var pageInfo = {
+      path: '/d3-cb/ch02-select/',
+      title: 'd3-cb chapter 2 | select',
+      description: 'intro',
+      pageClass: 'd3-cb-ch02-select'
+    }
+
+block main
+  
+  // some styling for the shapes below . hollow out 
+  style.
+    svg line{
+        stroke: grey;
+        stroke-width: 2;
+    }
+    svg circle{
+        stroke: red;
+        fill: none;
+        stroke-width: 2;
+    }
+    svg rect{
+        stroke: steelblue;
+        fill: none;
+        stroke-width: 2;
+    }
+    svg polygon{
+        stroke: green;
+        fill: none;
+        stroke-width: 2;
+    }
+ 
+  article.container
+    h1
+      scratch d3 ch01
+    header
+      :markdown-it(linkify langPrefix='highlight-')
+        let's draw an svg using d3 . For example, [a circle](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle), which has a cx, cy and r parameters
+      .svg-ex
+  
+
+
+
+block footer_scripts
+
+  script(type="text/javascript")(src="//d3js.org/d3.v5.min.js").
+  script.js-main(type="text/javascript")(nonce="some-nonce").
+    // so data is our data 
+    var width = 600,
+        height = 500;
+        
+    var svg = d3.select(".svg-ex").append("svg");
+    
+    svg.attr("height", height)
+        .attr("width", width);    
+        
+    svg.append("line") // <-A
+        .attr("x1", 0)
+        .attr("y1", 200)
+        .attr("x2", 100)
+        .attr("y2", 100);
+        
+    svg.append("circle") // <-B
+        .attr("cx", 200)
+        .attr("cy", 150)
+        .attr("r", 50);
+        
+    svg.append("rect")
+        .attr("x", 300) // <-C
+        .attr("y", 100)
+        .attr("width", 100) // <-D
+        .attr("height", 100)
+        .attr("rx", 5); // <-E
+        
+    svg.append("polygon")
+        .attr("points", "450,200 500,100 550,200"); // <-F

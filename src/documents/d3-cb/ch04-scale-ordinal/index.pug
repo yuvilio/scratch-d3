@@ -1,0 +1,83 @@
+extends /_layouts/single
+
+
+append vars
+  -
+    var pageInfo = {
+      path: '/d3-cb/ch02-select/',
+      title: 'd3-cb chapter 2 | select',
+      description: 'intro',
+      pageClass: 'd3-cb-ch02-select'
+    }
+
+block main
+  article.container
+    h1
+      scratch d3 ch01
+    header
+      :markdown-it(linkify langPrefix='highlight-')
+        Let's look into [ordinal scales](https://github.com/d3/d3/blob/master/API.md#ordinal-scales) (mapping some kind of numeric or ordered data to whatever). via the d3-scale module. They're just functions that map our numeric data based on the function we provide. they help proportionalize for example. 
+        the simplest ordinal scale function is scaleOrdinal. give it two arrays and it maps elemends of t the first array to the second one 
+        
+        
+
+      .scales-ex
+        <div id="alphabet" class="clear">
+            <span>Ordinal Scale with Alphabet<br></span>
+            <span>Mapping [1..10] to ["a".."j"]<br></span>
+        </div>
+        
+        :markdown-it()
+          There are all sorts of of pre-built scalings that you can use out of the box. For  example, the [d3-scale-chromatic module](https://github.com/d3/d3/blob/master/API.md#color-schemes-d3-scale-chromatic) lets you map those numbers into colors, like the [schemeCategory10](https://github.com/d3/d3-scale-chromatic/blob/v1.5.0/README.md#schemeCategory10) scaling function:
+          
+        <div id="category10" class="clear">
+            <span>Ordinal Color Scale Category 10<br></span>
+            <span>Mapping [1..10] to category 10 colors<br></span>
+        </div>
+        <div id="category20" class="clear">
+            <span>Ordinal Color Scale Category 20<br></span>
+            <span>Mapping [1..10] to category 20 colors<br></span>
+        </div>
+        <div id="category20b" class="clear">
+            <span>Ordinal Color Scale Category 20b<br></span>
+            <span>Mapping [1..10] to category 20b colors<br></span>
+        </div>
+        <div id="category20c" class="clear">
+            <span>Ordinal Color Scale Category 20c<br></span>
+            <span>Mapping [1..10] to category 20c colors<br></span>
+        </div>
+
+
+
+
+block footer_scripts
+
+  script(type="text/javascript")(src="//d3js.org/d3.v4.min.js").
+  script.js-main(type="text/javascript")(nonce="some-nonce").
+      var max = 10, data = [];
+      for (var i = 1; i <= max; ++i) data.push(i); // <-A
+      
+      //Mapping [1..10] to ["a".."j"]
+      var alphabet = d3.scaleOrdinal() // <-B
+          .domain(data)
+          .range(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]);
+          
+      function render(data, scale, selector) { // <-C
+          var cells  = d3.select(selector).selectAll("div.cell")
+                  .data(data);
+          cells.enter()
+                  .append("div")
+                      .classed("cell", true)
+                      .style("display", "inline-block")
+                      .style("background-color", function(d){  // <-D
+                          return scale(d).indexOf("#") >=0 ? scale(d) : "white";
+                      })
+                      .text(function (d) { // <-E
+                          return scale(d);
+                      });
+      }
+      render(data, alphabet, "#alphabet"); // <-F
+      render(data, d3.scaleOrdinal(d3.schemeCategory10), "#category10");
+      render(data, d3.scaleOrdinal(d3.schemeCategory20), "#category20");
+      render(data, d3.scaleOrdinal(d3.schemeCategory20b), "#category20b");
+      render(data, d3.scaleOrdinal(d3.schemeCategory20c), "#category20c"); // <-G
