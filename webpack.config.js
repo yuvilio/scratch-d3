@@ -130,6 +130,19 @@ const app = {
           }
         ]
       },
+      { // copy over data files
+        test: /\.(csv|json|xml)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'data/',
+            }
+          }
+        ]
+      },
+
       {
         test: /\.svg$/,
         use: [
