@@ -1,0 +1,127 @@
+extends /_layouts/single
+
+
+append vars
+  -
+    var pageInfo = {
+      path: '/d3-cb/graph-group-by-02/',
+      title: 'd3-cb graph-group-by-02 | select',
+      description: 'intro',
+      pageClass: 'graph-group-by-02'
+    }
+
+block main
+  style.
+    body {
+      
+    }
+
+      
+  article.container
+   .container__inner
+     h1
+       scratch d3 ch01
+     header
+       :markdown-it(linkify langPrefix='highlight-')
+         let's see if we can arrange nodes in columns
+       .svg-holder  
+
+block footer_scripts
+
+  script(type="text/javascript")(src="//d3js.org/d3.v3.min.js").
+  script.js-main(type="text/javascript")(nonce="some-nonce").
+  
+    window.addEventListener("load", function(){
+      // start here
+      // graph dimensions
+      // TODO: can size based on window width
+      var width = 960,
+          height = 500,
+          radius = 6;
+
+      // for v4+ , use d3.scaleOrdinal(d3.schemeCategory20) instead
+      var fill = d3.scale.category20();
+
+      var force = d3.layout.force()
+          .gravity(0.05)
+          .charge(-50) // -50
+          .linkDistance(50)
+          .size([width, height])
+          .linkStrength(0.005)
+          .friction(0.9)
+          .theta(0.8)
+          .alpha(0.1)
+
+      var svg = d3.select(".svg-holder").append("svg")
+          .classed('the-graph', true)
+          .attr("width", width)
+          .attr("height", height);
+
+      svg.append('rect')
+        .attr("width", width)
+        .attr("height", height)
+        .style({
+          fill: 'none',
+          stroke: 'none',
+          'stroke-width': 1
+        });
+
+      d3.json("/documents/d3-cb/graph-group-by-02/data.json", function(error, graph) {
+        if (error) throw error;
+
+        var tooltip = d3.select("body")
+      		.append("div")
+      		.style("position", "absolute")
+      		.style("z-index", "10")
+      		.style("visibility", "hidden");
+
+        var link = svg.selectAll("line")
+            .data(graph.links)
+          .enter().append("line");
+
+        var node = svg.selectAll("circle")
+            .data(graph.nodes)
+          .enter().append("circle")
+            .attr("r", radius - .75)
+            .style("fill", function(d) { return fill(d.depth); })
+            .style("stroke", function(d) { return d3.rgb(fill(d.group)).darker(); })
+            .call(force.drag);
+
+        force
+            .nodes(graph.nodes)
+            .links(graph.links)
+            .on("tick", tick)
+            .start();
+
+        function tick() {
+
+          node.each(function(d) { w = 105 * (1 + d.depth); d.x -= (0.2 * (d.x - w)) })
+
+          node.attr("cx", function(d) {return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
+              .attr("cy", function(d) {return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+
+
+          link.attr("x1", function(d) { return d.source.x; })
+              .attr("y1", function(d) { return d.source.y; })
+              .attr("x2", function(d) { return d.target.x; })
+              .attr("y2", function(d) { return d.target.y; });
+        }
+
+        node
+          .on("mouseover", function(d){
+          	return tooltip
+            	.text(d.name)
+              .style("visibility", "visible");
+        	})
+      		.on("mousemove", function(){
+          	return tooltip
+            	.style("top", (event.pageY - 10) + "px")
+              .style("left",(event.pageX + 10) + "px");
+        	})
+      		.on("mouseout", function(){
+          	return tooltip
+              .style("visibility", "hidden")
+        	});
+      });
+
+    });

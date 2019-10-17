@@ -4,10 +4,10 @@ extends /_layouts/single
 append vars
   -
     var pageInfo = {
-      path: '/d3-cb/ch02-select/',
-      title: 'd3-cb chapter 2 | select',
+      path: '/d3-cb/ch11-1-charge-grav/',
+      title: 'd3-cb chapter 11 | select',
       description: 'intro',
-      pageClass: 'd3-cb-ch02-select'
+      pageClass: 'd3-cb-ch11-1-charge-grav'
     }
 
 block main
@@ -28,7 +28,7 @@ block main
       scratch d3 ch01
     header
       :markdown-it(linkify langPrefix='highlight-')
-        let's draw an svg using d3 . For example, [a circle](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle), which has a cx, cy and r parameters
+        Let's start looking into the Force directed graph from the [d3-force](https://github.com/d3/d3/blob/master/API.md#forces-d3-force) module. It's called that because it draws a network graph and uses varios force metaphors (charge, gravity, center, collision, ..)   in order to layout the graph nodes position
       .svg-ex
         <div class="control-group">
           <button onclick="noForce()">
@@ -60,9 +60,16 @@ block footer_scripts
       
         var w = 1280, h = 800, r = 4.5,
             nodes = [],
+            // initialize our force simulation 
+            // simulation is a fancy name for a loop that runs noting each iteration (tick)
+            // where events can happen and be responded to 
+            // we'll have 
             force = d3.forceSimulation()
-                    .velocityDecay(0.8)
-                    .alphaDecay(0)
+                    .velocityDecay(0.4) // 0 is when the network nodes keep moving 
+                     // 1 means they stand still and don't bump into each other a lot (like they're in molasses)
+                     
+                    .alphaDecay(0) //the density of events. 1 very dense, 0 very sparse
+                      
                     .force("collision", d3.forceCollide(r + 0.5).strength(1));
         var svg = d3.select(".svg-ex")
             .append("svg")
