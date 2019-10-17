@@ -41,7 +41,7 @@ block footer_scripts
         console.clear()
           var w = 960, h = 500;
           
-          var radius = 25;
+          var radius = 30;
           var color = d3.scaleOrdinal(d3.schemeCategory20);
           var centerScale = d3.scalePoint().padding(1).range([0, w]);
           var forceStrength = 0.05;
@@ -72,8 +72,11 @@ block footer_scripts
             
             var circles = svg.selectAll("circle")
             	.data(data, function(d){ return d.ID ;});
-            
-            var circlesEnter = circles.enter().append("circle")
+
+                
+            var circlesEnterStart = circles.enter();
+            var circlesEnter = circlesEnterStart.append("a").append("g")
+              .append("circle")
             	.attr("r", function(d, i){ return d.r; })
               .attr("cx", function(d, i){ return 175 + 25 * i + 2 * i ** 2; })
       				.attr("cy", function(d, i){ return 250; })
@@ -86,14 +89,41 @@ block footer_scripts
                       .on("drag", dragged)
                       .on("end", dragended));
           
+          
+
+          
+              // one time adjusts 
+              // the circles link out 
+              d3.selectAll("svg>a")
+                .attr("href", "http://google.com");
+                
+              d3.selectAll("a>g")
+              .append('text')
+              .text("sample text")
+              .style("text-anchor", "middle")
+              .attr("stroke-width", "2px")
+              .attr("stroke-width", "#51c5cf")
+              .style("font-size", "14px")
+              .style("stroke", "black");
+              
+
+
+                
             circles = circles.merge(circlesEnter)
-            
+            /* texts = texts.merge(textsEnterStart) */
+
             function ticked() {
               //console.log("tick")
               //console.log(data.map(function(d){ return d.x; }));
               circles
                   .attr("cx", function(d){ return d.x; })
-                  .attr("cy", function(d){ return d.y; });
+                  .attr("cy", function(d){ return d.y; })
+                  
+                // position the text inside
+                d3.selectAll("text")
+                  .attr("dx", function(d){ return d.x; })
+                  .attr("dy", function(d){ return d.y; })    
+
             }   
 
             simulation
