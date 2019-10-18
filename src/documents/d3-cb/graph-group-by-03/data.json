@@ -1,41 +1,41 @@
 [
      {
-       "id": "1",
+       "id": "a",
        "Location": "1",
        "Group": "A",
        "Class": "X",
        "Type": "M"
      },
      {
-       "id": "2",
+       "id": "b",
        "Location": "1",
        "Group": "A",
        "Class": "Y",
        "Type": "N"
      },
      {
-       "id": "3",
+       "id": "c",
        "Location": "1",
        "Group": "A",
        "Class": "Y",
        "Type": "N"
      },
      {
-       "id": "4",
+       "id": "d",
        "Location": "1",
        "Group": "B",
        "Class": "Z",
        "Type": "M"
      },
      {
-       "id": "5",
+       "id": "e",
        "Location": "1",
        "Group": "B",
        "Class": "Y",
        "Type": "M"
      },
      {
-       "id": "6",
+       "id": "f",
        "Location": "1",
        "Group": "B",
        "Class": "X",

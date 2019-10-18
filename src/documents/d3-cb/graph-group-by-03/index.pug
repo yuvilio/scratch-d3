@@ -12,9 +12,10 @@ append vars
 
 block main
   style.
-    body {
-      
-    }
+    .links line {
+      stroke: #999;
+      stroke-opacity: 1;
+      }
 
       
   article.container
@@ -50,25 +51,17 @@ block footer_scripts
             .attr("width", w)
             .attr("height", h)
 
-            var links_data = [
-                {"source" : "1","target": "2", "distance": 10},
-                {"source" : "2","target": "3", "distance": 20}
-            ];
+              var links = [
+                  {"source": "a", "target": "f"}, //from the first node to the second
+                  {"source": "b", "target": "c"} //from the second node to the third
+              ];
                 
-              var link_force =  
-                    d3.forceLink(links_data).id(function(d){return d.id;})
+          
                     
 
                 
-          var simulation = d3.forceSimulation()
-                  .force("collide",d3.forceCollide( function(d){
-                    	 return d.r + 8 
-                      }).iterations(16) 
-                  )
-                  .force("charge", d3.forceManyBody())
-                  .force("y", d3.forceY().y(h / 2))
-                  .force("x", d3.forceX().x(w / 2))
-                  /* .force("links", link_force)  */
+  
+
 
                   
           //csv alternate 
@@ -76,6 +69,22 @@ block footer_scripts
 
           d3.json("/documents/d3-cb/graph-group-by-03/data.json", function(data){
             
+            var simulation = d3.forceSimulation(data)
+                    // lay out the nodes using these forces
+                    .force("collide",d3.forceCollide( function(d){
+                         return d.r + 8 
+                        }).iterations(16) 
+                    )
+                    .force("charge", d3.forceManyBody())
+                    .force("y", d3.forceY().y(h / 2))
+                    .force("x", d3.forceX().x(w / 2))
+                    .force("link", d3.forceLink(links).id(function(d,i) {
+                             return d.id; 
+                         })
+                         .strength(0.005) // low strength so grouping can happen 
+                     )
+
+                     
             data.forEach(function(d){
               d.r = radius;
               d.x = w / 2;
@@ -83,7 +92,8 @@ block footer_scripts
             })
             
             console.table(data); 
-                 
+            console.table(links); 
+
             
             
             var circles = svg.selectAll("circle")
@@ -111,14 +121,23 @@ block footer_scripts
                 
               d3.selectAll("a>g")
               .append('text')
-              .text("sample text")
+              .text(function(d){
+                return d.id
+              })
               .style("text-anchor", "middle")
               .attr("stroke-width", "2px")
               .attr("stroke-width", "#51c5cf")
               .style("font-size", "14px")
               .style("stroke", "black");
               
-
+              //draw lines for the links 
+              var link = svg.append("g")
+                    .attr("class", "links")
+                  .selectAll("line")
+                  .data(links)
+                  .enter().append("line")
+                    .attr("stroke-width", 2)
+                    .style("stroke", "black");      
 
                 
             circles = circles.merge(circlesEnter)
@@ -135,6 +154,13 @@ block footer_scripts
                 d3.selectAll("text")
                   .attr("dx", function(d){ return d.x; })
                   .attr("dy", function(d){ return d.y; })    
+                  
+                  //update link positions 
+                  link
+                      .attr("x1", function(d) { return d.source.x; })
+                      .attr("y1", function(d) { return d.source.y; })
+                      .attr("x2", function(d) { return d.target.x; })
+                      .attr("y2", function(d) { return d.target.y; });
 
             }   
 
