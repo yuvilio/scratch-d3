@@ -1,4 +1,5 @@
-[
+{
+  "nodes" : [
      {
        "id": "a",
        "Location": "1",
@@ -41,4 +42,9 @@
        "Class": "X",
        "Type": "N"
      }
+   ],
+   "links" :  [
+       {"source": "a", "target": "f"},
+       {"source": "b", "target": "c"} 
    ]
+ }

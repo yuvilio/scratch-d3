@@ -51,12 +51,8 @@ block footer_scripts
             .attr("width", w)
             .attr("height", h)
 
-              var links = [
-                  {"source": "a", "target": "f"}, //from the first node to the second
-                  {"source": "b", "target": "c"} //from the second node to the third
-              ];
-                
-          
+
+                  
                     
 
                 
@@ -67,7 +63,8 @@ block footer_scripts
           //csv alternate 
           //       d3.csv("/documents/d3-cb/graph-group-by-03/data.csv", function(data){...}
 
-          d3.json("/documents/d3-cb/graph-group-by-03/data.json", function(data){
+          d3.json("/documents/d3-cb/graph-group-by-03/data.json", function(dat){
+            var data = dat.nodes;
             
             var simulation = d3.forceSimulation(data)
                     // lay out the nodes using these forces
@@ -78,7 +75,7 @@ block footer_scripts
                     .force("charge", d3.forceManyBody())
                     .force("y", d3.forceY().y(h / 2))
                     .force("x", d3.forceX().x(w / 2))
-                    .force("link", d3.forceLink(links).id(function(d,i) {
+                    .force("link", d3.forceLink(dat.links).id(function(d,i) {
                              return d.id; 
                          })
                          .strength(0.005) // low strength so grouping can happen 
@@ -92,7 +89,7 @@ block footer_scripts
             })
             
             console.table(data); 
-            console.table(links); 
+            console.table(dat.links); 
 
             
             
@@ -134,7 +131,7 @@ block footer_scripts
               var link = svg.append("g")
                     .attr("class", "links")
                   .selectAll("line")
-                  .data(links)
+                  .data(dat.links)
                   .enter().append("line")
                     .attr("stroke-width", 2)
                     .style("stroke", "black");      
