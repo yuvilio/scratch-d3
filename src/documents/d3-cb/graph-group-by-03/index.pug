@@ -50,15 +50,31 @@ block footer_scripts
             .attr("width", w)
             .attr("height", h)
 
+            var links_data = [
+                {"source" : "1","target": "2", "distance": 10},
+                {"source" : "2","target": "3", "distance": 20}
+            ];
+                
+              var link_force =  
+                    d3.forceLink(links_data).id(function(d){return d.id;})
+                    
+
+                
           var simulation = d3.forceSimulation()
                   .force("collide",d3.forceCollide( function(d){
-                    	return d.r + 8 }).iterations(16) 
+                    	 return d.r + 8 
+                      }).iterations(16) 
                   )
                   .force("charge", d3.forceManyBody())
                   .force("y", d3.forceY().y(h / 2))
                   .force("x", d3.forceX().x(w / 2))
-          
-          d3.csv("/documents/d3-cb/graph-group-by-03/data.csv", function(data){
+                  /* .force("links", link_force)  */
+
+                  
+          //csv alternate 
+          //       d3.csv("/documents/d3-cb/graph-group-by-03/data.csv", function(data){...}
+
+          d3.json("/documents/d3-cb/graph-group-by-03/data.json", function(data){
             
             data.forEach(function(d){
               d.r = radius;
@@ -71,7 +87,7 @@ block footer_scripts
             
             
             var circles = svg.selectAll("circle")
-            	.data(data, function(d){ return d.ID ;});
+            	.data(data, function(d){ return d.id ;});
 
                 
             var circlesEnterStart = circles.enter();
@@ -80,14 +96,10 @@ block footer_scripts
             	.attr("r", function(d, i){ return d.r; })
               .attr("cx", function(d, i){ return 175 + 25 * i + 2 * i ** 2; })
       				.attr("cy", function(d, i){ return 250; })
-            	.style("fill", function(d, i){ return color(d.ID); })
-            	.style("stroke", function(d, i){ return color(d.ID); })
+            	.style("fill", function(d, i){ return color(d.id); })
+            	.style("stroke", function(d, i){ return color(d.id); })
             	.style("stroke-width", 10)
-            	.style("pointer-events", "all")
-            	.call(d3.drag()
-                      .on("start", dragstarted)
-                      .on("drag", dragged)
-                      .on("end", dragended));
+            	.style("pointer-events", "all");
           
           
 
@@ -149,11 +161,11 @@ block footer_scripts
               d.fx = null;
               d.fy = null;
               var me = d3.select(this)
-              console.log(me.classed("selected"))
+              /* console.log(me.classed("selected")) */
               me.classed("selected", !me.classed("selected"))
               
               d3.selectAll("circle")
-                .style("fill", function(d, i){ return color(d.ID); })
+                .style("fill", function(d, i){ return color(d.id); })
             	
               d3.selectAll("circle.selected")
                 .style("fill", "none")
