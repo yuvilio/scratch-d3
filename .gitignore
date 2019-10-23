@@ -1,2 +1,5 @@
 /node_modules
 /dist
+
+#specific files
+src/documents/d3-cb/graph-group-by-04/data2.json

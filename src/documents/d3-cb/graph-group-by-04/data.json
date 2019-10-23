@@ -1,0 +1,50 @@
+{
+  "nodes" : [
+     {
+       "id": "a",
+       "Location": "1",
+       "Group": "A",
+       "Class": "X",
+       "Type": "M"
+     },
+     {
+       "id": "b",
+       "Location": "1",
+       "Group": "A",
+       "Class": "Y",
+       "Type": "N"
+     },
+     {
+       "id": "c",
+       "Location": "1",
+       "Group": "A",
+       "Class": "Y",
+       "Type": "N"
+     },
+     {
+       "id": "d",
+       "Location": "1",
+       "Group": "B",
+       "Class": "Z",
+       "Type": "M"
+     },
+     {
+       "id": "e",
+       "Location": "1",
+       "Group": "B",
+       "Class": "Y",
+       "Type": "M"
+     },
+     {
+       "id": "f",
+       "Location": "1",
+       "Group": "B",
+       "Class": "X",
+       "Type": "N"
+     }
+   ],
+   "links" :  [
+       {"source": "a", "target": "f"},
+       {"source": "b", "target": "c"} 
+   ]
+ }

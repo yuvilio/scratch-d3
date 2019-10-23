@@ -1,0 +1,277 @@
+extends /_layouts/single
+
+
+append vars
+  -
+    var pageInfo = {
+      path: '/d3-cb/graph-group-by-02/',
+      title: 'd3-cb graph-group-by-02 | select',
+      description: 'intro',
+      pageClass: 'graph-group-by-02'
+    }
+
+block main
+  style.
+    .links line {
+      stroke: #999;
+      stroke-opacity: 1;
+      }
+
+      
+  article.container
+   .container__inner-test
+     h1
+       scratch d3 ch01
+
+       <div id="toolbar">
+        <!--  the id sorts by group -->
+         <button id="all" class="button active">All</button>
+         <button id="group" class="button">By Group</button>
+       </div>
+
+     .svg-holder  
+
+block footer_scripts
+
+  script(type="text/javascript")(src="//d3js.org/d3.v4.min.js").
+  script.js-main(type="text/javascript")(nonce="some-nonce").
+  
+    window.addEventListener("load", function(){
+        console.clear()
+          var width = 960, height = 500;
+
+          var radius = 30;
+          var color = d3.scaleOrdinal(d3.schemeCategory20);
+          var centerScale = d3.scalePoint().padding(1).range([0, width]);
+          var forceStrength = 0.05;
+          
+          var svg = d3.select(".svg-holder").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+
+
+                  
+                    
+
+                
+  
+
+
+                  
+          //csv alternate 
+
+
+          d3.json("/documents/d3-cb/graph-group-by-04/data2.json", function(dat){
+            var data = dat.nodes;
+            
+            var simulation = d3.forceSimulation(data)
+                    // lay out the nodes using these forces 
+                    .force("collide",d3.forceCollide( function(d){
+                          return d.r + 8 
+                        }).iterations(16) 
+                    )
+                    .force("charge", d3.forceManyBody())
+                    .force("y", d3.forceY().y(height / 2))
+                    .force("x", d3.forceX().x(width / 2))
+                    // links 
+                    /* .force("link", d3.forceLink(dat.links).id(function(d,i) {
+                             return d.id; 
+                         })
+                         .strength(0.005) // low strength so grouping can happen 
+                     ) */
+
+                     
+            data.forEach(function(d){
+              d.r = radius;
+              d.x = width / 2;
+              d.y = height / 2;
+            })
+            
+            console.table(data); 
+            console.table(dat.links); 
+
+            
+            
+            var circles = svg.selectAll("circle")
+            	.data(data, function(d){ return d.id ;});
+
+                
+            var circlesEnterStart = circles.enter();
+            var circlesEnter = circlesEnterStart.append("a").append("g")
+              .append("circle")
+            	.attr("r", function(d, i){ return d.r; })
+              .attr("cx", function(d, i){ return 175 + 25 * i + 2 * i ** 2; })
+      				.attr("cy", function(d, i){ return 250; })
+            	.style("fill", function(d, i){ return color("#1697d3"); })
+            	.style("stroke", function(d, i){ return color("#1697d3"); })
+            	.style("stroke-width", 10)
+            	.style("pointer-events", "all");
+          
+          
+
+          
+              // one time adjusts 
+              // the circles link out 
+              d3.selectAll("svg>a")
+                .attr("href", function(d){
+                   return "/network/#" + d.id;
+                });
+                
+              d3.selectAll("a>g")
+              .append('text')
+              .text(function(d){
+                console.log(d.title.replace(" ", "<br />"));
+                return d.title
+              })
+              .style("text-anchor", "middle")
+              .attr("stroke-width", "2px")
+              .attr("stroke-width", "#51c5cf")
+              .style("font-size", "14px")
+              .style("stroke", "#fdfdfd");
+              
+              //draw lines for the links 
+              var link = svg.append("g")
+                    .attr("class", "links")
+                  .selectAll("line")
+                  .data(dat.links)
+                  .enter().append("line")
+                    .attr("stroke-width", 2)
+                    .style("stroke", "black");      
+
+                
+            circles = circles.merge(circlesEnter)
+            /* texts = texts.merge(textsEnterStart) */
+
+            function ticked() {
+              //console.log("tick")
+              //console.log(data.map(function(d){ return d.x; }));
+              circles
+                  .attr("cx", function(d){ return d.x; })
+                  .attr("cy", function(d){ return d.y; })
+                  
+                // position the text inside
+                d3.selectAll("text")
+                  .attr("dx", function(d){ return d.x; })
+                  .attr("dy", function(d){ return d.y; })    
+                  
+                  //update link positions 
+                  link
+                      .attr("x1", function(d) { return d.source.x; })
+                      .attr("y1", function(d) { return d.source.y; })
+                      .attr("x2", function(d) { return d.target.x; })
+                      .attr("y2", function(d) { return d.target.y; });
+
+            }   
+
+            simulation
+                  .nodes(data)
+                  .on("tick", ticked);
+            
+            function dragstarted(d,i) {
+              //console.log("dragstarted " + i)
+              if (!d3.event.active) simulation.alpha(1).restart();
+              d.fx = d.x;
+              d.fy = d.y;
+            }
+
+            function dragged(d,i) {
+              //console.log("dragged " + i)
+              d.fx = d3.event.x;
+              d.fy = d3.event.y;
+            }
+
+            function dragended(d,i) {
+              //console.log("dragended " + i)
+              if (!d3.event.active) simulation.alphaTarget(0);
+              d.fx = null;
+              d.fy = null;
+              var me = d3.select(this)
+              /* console.log(me.classed("selected")) */
+              me.classed("selected", !me.classed("selected"))
+              
+              d3.selectAll("circle")
+                .style("fill", function(d, i){ return color(d.id); })
+            	
+              d3.selectAll("circle.selected")
+                .style("fill", "none")
+            	
+            } 
+            
+            function groupBubbles() {
+              hideTitles();
+
+              // @v4 Reset the 'x' force to draw the bubbles to the center.
+              simulation.force('x', d3.forceX().strength(forceStrength).x(width / 2));
+
+              // @v4 We can reset the alpha value and restart the simulation
+              simulation.alpha(1).restart();
+            }
+            
+            function splitBubbles(byVar) {
+              
+              centerScale.domain(data.map(function(d){ return d[byVar]; }));
+              
+              if(byVar == "all"){
+                hideTitles()
+              } else {
+      	        showTitles(byVar, centerScale);
+              }
+              
+              // @v4 Reset the 'x' force to draw the bubbles to their year centers
+              // strength(forceStrength)
+              simulation.force('x', d3.forceX().strength(3).x(function(d){ 
+              	return centerScale(d[byVar]);
+              }));
+
+              // @v4 We can reset the alpha value and restart the simulation
+              simulation.alpha(2).restart();
+            }
+            
+            function hideTitles() {
+              svg.selectAll('.title').remove();
+            }
+
+            function showTitles(byVar, scale) {
+              // Another way to do this would be to create
+              // the year texts once and then just hide them.
+             	var titles = svg.selectAll('.title')
+                .data(scale.domain());
+              
+              titles.enter().append('text')
+                	.attr('class', 'title')
+              	.merge(titles)
+                  .attr('x', function (d) { return scale(d); })
+                  .attr('y', 40)
+                  .attr('text-anchor', 'middle')
+                  .text(function (d) { return byVar + ' ' + d; });
+              
+              titles.exit().remove() 
+            }
+            
+            function setupButtons() {
+              d3.selectAll('.button')
+                .on('click', function () {
+                	
+                  // Remove active class from all buttons
+                  d3.selectAll('.button').classed('active', false);
+                  // Find the button just clicked
+                  var button = d3.select(this);
+
+                  // Set it as the active button
+                  button.classed('active', true);
+
+                  // Get the id of the button
+                  var buttonId = button.attr('id');
+
+      	          console.log(buttonId)
+                  // Toggle the bubble chart based on
+                  // the currently clicked button.
+                  splitBubbles(buttonId);
+                });
+            }
+            
+            setupButtons()
+            
+          })
+
+    });
